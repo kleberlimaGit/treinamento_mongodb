@@ -1,6 +1,10 @@
 package com.example.demo.models.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collation = "users")
@@ -10,6 +14,9 @@ public class User {
 	private String id;
 	private String name;
 	private String email;
+	
+	@DBRef(lazy = true) //referencia a class Post na entidade User 
+	public List<Post> posts = new ArrayList<>();
 	
 	public User() {}
 	
