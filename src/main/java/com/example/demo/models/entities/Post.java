@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.example.demo.models.embedded.Author;
 import com.example.demo.models.embedded.Comment;
 
-@Document(collation = "posts")
+@Document(collection = "post")
 public class Post {
 
 	@Id
