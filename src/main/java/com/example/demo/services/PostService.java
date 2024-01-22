@@ -1,10 +1,11 @@
 package com.example.demo.services;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,23 +32,28 @@ public class PostService {
 	@Transactional(readOnly = true)
 	public List<PostDTO> findByTitle(String text) {
 		List<Post> list =  repository.searchTitle(text);
+//		List<Post> list =  repository.findByTitleContainingIgnoreCase(text);
 		return list.stream().map(x -> new PostDTO(x)).toList();
 	}
 	
 	@Transactional(readOnly = true)
 	public List<PostDTO> fullSearch(String text, String start, String end) {
-		Instant startMoment = convertMoment(start, Instant.ofEpochMilli(0L));
-		Instant endMoment = convertMoment(end, Instant.now());
+		String startMoment = convertToValidDate(start, LocalDate.ofEpochDay(0L));
+		String endMoment = convertToValidDate(end,LocalDate.now());
 		List<Post> list = repository.fullSearch(text, startMoment, endMoment);
-		return list.stream().map(x -> new PostDTO(x)).collect(Collectors.toList());
+		return list.stream().map(x -> new PostDTO(x)).toList();
 	}
 	
-	private Instant convertMoment(String orignalText, Instant alternative) {
-		try {
-			return Instant.parse(orignalText);
-		}
-		catch (DateTimeParseException e) {
-			return alternative;
-		}
+	private String convertToValidDate(String date, LocalDate alternativeDate) {
+
+		    DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+		    .ofPattern("yyyy-mm-dd");
+		    try {
+		        return LocalDate.parse(date, dateTimeFormatter).toString();
+		    } catch (DateTimeParseException e) {
+		       return alternativeDate.toString();
+		    } 
+		
 	}
+	
 }
