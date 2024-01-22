@@ -1,10 +1,11 @@
 package com.example.demo.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.models.dto.PostDTO;
 import com.example.demo.models.dto.UserDTO;
@@ -17,16 +18,18 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	public List<UserDTO> findAll(){
+
+	public List<UserDTO> findAll() {
 		return userRepository.findAll().stream().map(x -> new UserDTO(x)).toList();
 	}
 	
+	@Transactional(readOnly = true)
 	public UserDTO findById(String id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: "+id));
+		User user = getUserById(id);
 		return new UserDTO(user);
 	}
-	
+
+	@Transactional
 	public UserDTO insert(UserDTO dto) {
 		User entity = new User();
 		copyDtoToEntity(dto, entity);
@@ -34,26 +37,34 @@ public class UserService {
 		return new UserDTO(entity);
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public void delete(String id) {
-		findById(id);
+		getUserById(id);
 		userRepository.deleteById(id);
 	}
-
+	
+	@Transactional
 	public UserDTO update(String id, UserDTO dto) {
-		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: "+id));
+		User user = getUserById(id);
 		copyDtoToEntity(dto, user);
 		user = userRepository.save(user);
 		return new UserDTO(user);
 	}
-	
+
+	@Transactional(readOnly = true)
 	public List<PostDTO> getUserPosts(String id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: "+id));
-		return user.getPosts().stream().map(x -> new PostDTO(x)).collect(Collectors.toList());
+		User user = getUserById(id);
+		return user.getPosts().stream().map(x -> new PostDTO(x)).toList();
 	}
-	
-	
+
 	private void copyDtoToEntity(UserDTO dto, User entity) {
 		entity.setName(dto.getName());
 		entity.setEmail(dto.getEmail());
+	}
+
+	private User getUserById(String id) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: " + id));
+		return user;
 	}
 }

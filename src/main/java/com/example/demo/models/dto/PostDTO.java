@@ -1,6 +1,5 @@
 package com.example.demo.models.dto;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +24,12 @@ public class PostDTO  {
 	public PostDTO() {
 	}
 
-	public PostDTO(String id, Instant moment, String title, String body, Author author, List<Comment> comments) {
+	public PostDTO(String id, Instant moment, String title, String body, Author author) {
 		this.id = id;
 		this.moment = moment;
 		this.title = title;
 		this.body = body;
 		this.author = author;
-		this.comments = comments;
 	}
 
 	public PostDTO(Post entity) {
