@@ -14,6 +14,11 @@ public interface PostRepository extends MongoRepository<Post, String>{
 	
 	List<Post> findByTitleContainingIgnoreCase(String text);
 	
-	@Query("{ $and: [ { $expr: { $gte: [ { $dateToString: { format: '%Y-%m-%d', date: '$moment' } }, ?1 ] } }, { $expr: { $lte: [ { $dateToString: { format: '%Y-%m-%d', date: '$moment' } }, ?2 ] } }, { $or: [ { 'title': { $regex: ?0, $options: 'i' } }, { 'body': { $regex: ?0, $options: 'i' } }, { 'comments.text': { $regex: ?0, $options: 'i' } } ] } ] }")
+	@Query("{ $and: [ { $expr: { $gte: [ { $dateToString: { format: '%Y-%m-%d', date: '$moment' } }, ?1 ] } }, "
+			+ "{ $expr: { $lte: [ { $dateToString: { format: '%Y-%m-%d', date: '$moment' } }, ?2 ] } }, "
+			+ "{ $or: [ { 'title': { $regex: ?0, $options: 'i' } }, { 'body': { $regex: ?0, $options: 'i' } }, "
+			+ "{ 'comments.text': { $regex: ?0, $options: 'i' } } ] } ] }")
 	List<Post> fullSearch(String text, String startMoment, String endMoment);
+	
+	List<Post> findByAuthorId(String id);
 }

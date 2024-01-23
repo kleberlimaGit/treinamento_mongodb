@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.models.dto.PostDTO;
 import com.example.demo.models.entities.Post;
 import com.example.demo.repositories.PostRepository;
+import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -21,6 +22,9 @@ public class PostService {
 
 	@Autowired
 	private PostRepository repository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Transactional(readOnly = true)
 	public PostDTO findById(String id) {
@@ -52,8 +56,7 @@ public class PostService {
 		        return LocalDate.parse(date, dateTimeFormatter).toString();
 		    } catch (DateTimeParseException e) {
 		       return alternativeDate.toString();
-		    } 
-		
+		    } 		
 	}
 	
 }
