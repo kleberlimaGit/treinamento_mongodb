@@ -16,6 +16,7 @@ import com.example.demo.models.entities.Post;
 import com.example.demo.repositories.PostRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.exceptions.ResourceNotFoundException;
+import com.example.demo.utils.Util;
 
 @Service
 public class PostService {
@@ -42,21 +43,21 @@ public class PostService {
 	
 	@Transactional(readOnly = true)
 	public List<PostDTO> fullSearch(String text, String start, String end) {
-		String startMoment = convertToValidDate(start, LocalDate.ofEpochDay(0L));
-		String endMoment = convertToValidDate(end,LocalDate.now());
+		String startMoment =  Util.isValidDate(start) ? start : LocalDate.ofEpochDay(0L).toString();
+		String endMoment = Util.isValidDate(end) ? end : LocalDate.now().toString();
 		List<Post> list = repository.fullSearch(text, startMoment, endMoment);
 		return list.stream().map(x -> new PostDTO(x)).toList();
 	}
 	
-	private String convertToValidDate(String date, LocalDate alternativeDate) {
-
-		    DateTimeFormatter dateTimeFormatter = DateTimeFormatter
-		    .ofPattern("yyyy-mm-dd");
-		    try {
-		        return LocalDate.parse(date, dateTimeFormatter).toString();
-		    } catch (DateTimeParseException e) {
-		       return alternativeDate.toString();
-		    } 		
-	}
+//	private String convertToValidDate(String date, LocalDate alternativeDate) {
+//
+//		    DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+//		    .ofPattern("yyyy-mm-dd");
+//		    try {
+//		        return LocalDate.parse(date, dateTimeFormatter).toString();
+//		    } catch (DateTimeParseException e) {
+//		       return alternativeDate.toString();
+//		    } 		
+//	}
 	
 }
